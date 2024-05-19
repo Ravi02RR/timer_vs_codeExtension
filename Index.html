@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        #start {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #start:hover {
+            background-color: #45a049;
+            transform: scale(1.1);
+        }
+
+        #stop {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #stop:hover {
+            background-color: #da190b;
+            transform: scale(1.1);
+        }
+
+        #reset {
+            background-color: #008CBA;
+            color: white;
+        }
+
+        #reset:hover {
+            background-color: #007bb5;
+            transform: scale(1.1);
+        }
+
+        #timer {
+            font-size: 3em;
+            font-weight: bold;
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><span id="timer">00:00:00</span></h1>
+    <div id="controls">
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script>
+        const vscode = acquireVsCodeApi();
+        document.getElementById('start').addEventListener('click', () => {
+            vscode.postMessage({ command: 'start' });
+        });
+        document.getElementById('stop').addEventListener('click', () => {
+            vscode.postMessage({ command: 'stop' });
+        });
+        document.getElementById('reset').addEventListener('click', () => {
+            vscode.postMessage({ command: 'reset' });
+        });
+
+        window.addEventListener('message', event => {
+            const message = event.data;
+            switch (message.command) {
+                case 'update':
+                    const hours = String(Math.floor(message.time / 3600)).padStart(2, '0');
+                    const minutes = String(Math.floor((message.time % 3600) / 60)).padStart(2, '0');
+                    const seconds = String(Math.floor(message.time % 60));
+                    document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+                    break;
+                case 'status':
+                    console.log(message.status);
+                    break;
+            }
+        });
+    </script>
+</body>
+
+</html>
